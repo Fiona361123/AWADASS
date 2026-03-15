@@ -1,0 +1,61 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Http\Request;
+
+/* Public routes */
+Route::get('/', fn() => redirect()->route('login'));
+
+/* Login */
+Route::get('/login',  [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+
+/* Register */
+Route::get('/register',  [AuthController::class, 'showRegister'])->name('register');
+Route::post('/register', [AuthController::class, 'register'])->name('register.post');
+
+/* Logout */
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+/* Forgot password */
+Route::get('/forgot-password', fn() => view('auth.forgot-password'))->name('password.request');
+
+Route::post('/forgot-password', function (Request $request) {
+    $request->validate(['email' => 'required|email']);
+    $status = Password::sendResetLink($request->only('email'));
+    return $status === Password::RESET_LINK_SENT
+        ? back()->with('status', __($status))
+        : back()->withErrors(['email' => __($status)]);
+})->name('password.email');
+
+Route::get('/reset-password/{token}', function (string $token) {
+    return view('auth.reset-password', ['token' => $token]);
+})->name('password.reset');
+
+Route::post('/reset-password', function (Request $request) {
+    $request->validate([
+        'token'    => 'required',
+        'email'    => 'required|email',
+        'password' => 'required|confirmed|min:8',
+    ]);
+    $status = Password::reset(
+        $request->only('email', 'password', 'password_confirmation', 'token'),
+        function ($user, $password) {
+            $user->forceFill(['password' => bcrypt($password)])->save();
+        }
+    );
+    return $status === Password::PASSWORD_RESET
+        ? redirect()->route('login')->with('success', 'Password reset! Please sign in.')
+        : back()->withErrors(['email' => __($status)]);
+})->name('password.update');
+
+/* Authenticated routes */
+Route::middleware('auth')->group(function () {
+    Route::get('/home', fn() => view('home'))->name('home');
+    Route::get('/profile',       [ProfileController::class, 'show'])->name('profile');
+    Route::get('/profile/edit',  [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile',       [ProfileController::class, 'update'])->name('profile.update');
+});
