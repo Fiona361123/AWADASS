@@ -16,20 +16,31 @@
 <nav class="navbar">
     <div class="nav-inner">
         @auth
-        <a href="{{ route('home') }}" class="nav-logo">Job<span>Bridge</span></a>
+            <a href="{{ route('home') }}" class="nav-logo">Job<span>Bridge</span></a>
         @else
-        <a href="{{ route('login') }}" class="nav-logo">Job<span>Bridge</span></a>
-        @endauth        
+            <a href="{{ route('login') }}" class="nav-logo">Job<span>Bridge</span></a>
+        @endauth
+
         <div class="nav-links">
             @auth
-                <a href="{{ route('profile') }}" class="nav-link">My Profile</a>
-                <form action="{{ route('logout') }}" method="POST" style="display:inline">
-                    @csrf
-                    <button type="submit" class="btn-nav">Sign Out</button>
-                </form>
+                <div class="hamburger-menu" id="hamburgerMenu">
+                    <button class="hamburger-btn" onclick="toggleMenu()" id="hamburgerBtn">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                    <div class="dropdown" id="dropdownMenu">
+                        <a href="{{ route('profile') }}" class="dropdown-item">My Profile</a>
+                        <div class="dropdown-divider"></div>
+                        <form action="{{ route('logout') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="dropdown-item dropdown-item-btn">Sign Out</button>
+                        </form>
+                    </div>
+                </div>
             @else
                 <a href="{{ route('login') }}" class="nav-link">Login</a>
-                <a href="{{ route('register') }}" class="btn-nav-solid">Sign Up</a>
+                <a href="{{ route('register') }}" class="btn-nav-solid">Sign Up Free</a>
             @endauth
         </div>
     </div>
@@ -50,5 +61,22 @@
 @yield('content')
 
 @stack('scripts')
+
+<script>
+function toggleMenu() {
+    const dropdown = document.getElementById('dropdownMenu');
+    const btn      = document.getElementById('hamburgerBtn');
+    dropdown.classList.toggle('open');
+    btn.classList.toggle('active');
+}
+
+document.addEventListener('click', function(e) {
+    const menu = document.getElementById('hamburgerMenu');
+    if (menu && !menu.contains(e.target)) {
+        document.getElementById('dropdownMenu').classList.remove('open');
+        document.getElementById('hamburgerBtn').classList.remove('active');
+    }
+});
+</script>
 </body>
 </html>

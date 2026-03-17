@@ -127,6 +127,110 @@ input, select, textarea {
     background: var(--primary-dark);
 }
 
+/* Hamburger menu */
+.hamburger-menu {
+    position: relative;
+}
+
+.hamburger-btn {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    width: 40px;
+    height: 40px;
+    border-radius: 9px;
+    background: transparent;
+    border: 1.5px solid var(--border);
+    padding: 8px;
+    transition: all .2s;
+}
+
+.hamburger-btn:hover {
+    border-color: var(--primary);
+    background: var(--primary-light);
+}
+
+.hamburger-btn span {
+    display: block;
+    width: 18px;
+    height: 2px;
+    background: var(--ink);
+    border-radius: 2px;
+    transition: all .3s;
+    transform-origin: center;
+}
+
+.hamburger-btn.active span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+}
+
+.hamburger-btn.active span:nth-child(2) {
+    opacity: 0;
+    transform: scaleX(0);
+}
+
+.hamburger-btn.active span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+}
+
+/* Dropdown */
+.dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: 0 8px 32px rgba(35,71,197,.14);
+    min-width: 180px;
+    padding: 6px;
+    animation: slideUp .2s ease;
+}
+
+.dropdown.open {
+    display: block;
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: .875rem;
+    font-weight: 600;
+    color: var(--ink);
+    text-decoration: none;
+    transition: background .15s;
+    width: 100%;
+    text-align: left;
+    border: none;
+    background: transparent;
+}
+
+.dropdown-item:hover {
+    background: var(--primary-light);
+    color: var(--primary);
+}
+
+.dropdown-item-btn {
+    width: 100%;
+    cursor: pointer;
+}
+
+.dropdown-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 4px 0;
+}
+
+.dropdown-icon {
+    font-size: 1rem;
+}
+
 /* Fields */
 .field {
     display: flex;

@@ -1,0 +1,11 @@
+.field-err {
+    color: #991b1b;
+    font-size: .78rem;
+    margin-top: 3px;
+}
+
+.field-hint {
+    color: var(--muted);
+    font-size: .75rem;
+    margin-top: 3px;
+}

@@ -37,7 +37,9 @@
 
             @if($errors->any())
                 <div class="alert alert-error" style="margin-top:16px">
-                    @foreach($errors->all() as $error)<div>{{ $error }}</div>@endforeach
+                    @foreach($errors->all() as $error)
+                        <div>{{ $error }}</div>
+                    @endforeach
                 </div>
             @endif
 
@@ -49,19 +51,20 @@
                 <div id="step1">
                     <div class="field">
                         <label>Full Name *</label>
-                        <input type="text" name="name" value="{{ old('name') }}" placeholder="Jane Smith" required>
+                        <input type="text" name="name" value="{{ old('name') }}" placeholder="Jane Smith">
                     </div>
                     <div class="field">
                         <label>Email Address *</label>
-                        <input type="email" name="email" value="{{ old('email') }}" placeholder="jane@example.com" required>
+                        <input type="email" name="email" value="{{ old('email') }}" placeholder="jane@example.com">
                     </div>
                     <div class="field">
                         <label>Password *</label>
-                        <input type="password" name="password" placeholder="Minimum 8 characters" required>
+                        <input type="password" name="password" placeholder="Min 8 chars, upper, lower, number, symbol">
+                        <small class="field-hint">Must contain uppercase, lowercase, number and symbol</small>
                     </div>
                     <div class="field">
                         <label>Confirm Password *</label>
-                        <input type="password" name="password_confirmation" placeholder="Repeat your password" required>
+                        <input type="password" name="password_confirmation" placeholder="Repeat your password">
                     </div>
                     <div class="field">
                         <label>Phone Number</label>
@@ -71,7 +74,7 @@
                         <label>Company Name *</label>
                         <input type="text" name="company_name" value="{{ old('company_name') }}" placeholder="Acme Corp">
                     </div>
-                    <button type="button" class="btn btn-primary" onclick="goStep2()">Continue</button>
+                    <button type="button" class="btn btn-primary" onclick="goStep2()">Continue →</button>
                 </div>
 
                 {{-- Step 2 --}}
@@ -80,11 +83,11 @@
                     <div id="seekerStep2">
                         <div class="field">
                             <label>Current / Desired Job Title *</label>
-                            <input type="text" name="job_title" value="{{ old('job_title') }}" placeholder="e.g. Software Engineer" data-required="true">
+                            <input type="text" name="job_title" value="{{ old('job_title') }}" placeholder="e.g. Software Engineer">
                         </div>
                         <div class="field">
                             <label>Location *</label>
-                            <input type="text" name="location" value="{{ old('location') }}" placeholder="Kuala Lumpur, MY" data-required="true">
+                            <input type="text" name="location" value="{{ old('location') }}" placeholder="Kuala Lumpur, MY">
                         </div>
                         <div class="field">
                             <label>Bio</label>
@@ -99,7 +102,7 @@
                     <div id="employerStep2" style="display:none">
                         <div class="field">
                             <label>Industry *</label>
-                            <select name="industry" data-required="true">
+                            <select name="industry">
                                 <option value="">Select industry...</option>
                                 @foreach(['Technology','Finance','Healthcare','Education','Retail','Manufacturing','Media','Other'] as $ind)
                                     <option value="{{ strtolower($ind) }}" {{ old('industry') == strtolower($ind) ? 'selected' : '' }}>{{ $ind }}</option>
@@ -124,13 +127,13 @@
                         </div>
                         <div class="field">
                             <label>Location *</label>
-                            <input type="text" name="emp_location" value="{{ old('emp_location') }}" placeholder="Kuala Lumpur, MY" data-required="true">
+                            <input type="text" name="emp_location" value="{{ old('emp_location') }}" placeholder="Kuala Lumpur, MY">
                         </div>
                     </div>
 
                     <div class="field-row">
-                        <button type="button" class="btn btn-outline" onclick="goStep1()">Back</button>
-                        <button type="submit" class="btn btn-primary">Create Account</button>
+                        <button type="button" class="btn btn-outline" onclick="goStep1()">← Back</button>
+                        <button type="button" class="btn btn-primary" onclick="submitForm()">Create Account</button>
                     </div>
                 </div>
 
@@ -149,7 +152,14 @@
 
 @push('scripts')
 <script>
-let currentRole = '{{ old("role", "seeker") }}';
+
+var currentRole = 'seeker';
+var hasErrors   = {{ $errors->any() ? 'true' : 'false' }};
+
+if (hasErrors) {
+    document.getElementById('step1').style.display = 'block';
+    document.getElementById('step2').style.display = 'none';
+}
 
 function switchRole(role) {
     currentRole = role;
@@ -168,53 +178,84 @@ function switchRole(role) {
     document.getElementById('employerStep2').style.display = role === 'employer' ? 'block' : 'none';
 }
 
+function showPopup(field, message) {
+    field.focus();
+    field.setCustomValidity(message);
+    field.reportValidity();
+    field.setCustomValidity('');
+}
+
 function goStep2() {
-    const name    = document.querySelector('input[name="name"]');
-    const email   = document.querySelector('input[name="email"]');
-    const pass    = document.querySelector('input[name="password"]');
-    const confirm = document.querySelector('input[name="password_confirmation"]');
-    const company = document.querySelector('input[name="company_name"]');
+    var name    = document.querySelector('input[name="name"]');
+    var email   = document.querySelector('input[name="email"]');
+    var pass    = document.querySelector('input[name="password"]');
+    var confirm = document.querySelector('input[name="password_confirmation"]');
+    var company = document.querySelector('input[name="company_name"]');
+
+    name.setCustomValidity('');
+    email.setCustomValidity('');
+    pass.setCustomValidity('');
+    confirm.setCustomValidity('');
 
     if (!name.value.trim()) {
-        name.focus();
-        name.setCustomValidity('Please enter your full name.');
+        name.setCustomValidity('Please fill out this field.');
         name.reportValidity();
-        name.setCustomValidity('');
         return;
     }
     if (!email.value.trim()) {
-        email.focus();
-        email.setCustomValidity('Please enter your email address.');
+        email.setCustomValidity('Please fill out this field.');
         email.reportValidity();
-        email.setCustomValidity('');
+        return;
+    }
+    var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(email.value.trim())) {
+        email.setCustomValidity('Please enter a valid email address e.g. name@example.com');
+        email.reportValidity();
         return;
     }
     if (!pass.value.trim()) {
-        pass.focus();
-        pass.setCustomValidity('Please enter a password.');
+        pass.setCustomValidity('Please fill out this field.');
         pass.reportValidity();
-        pass.setCustomValidity('');
         return;
     }
     if (pass.value.length < 8) {
-        pass.focus();
         pass.setCustomValidity('Password must be at least 8 characters.');
         pass.reportValidity();
-        pass.setCustomValidity('');
+        return;
+    }
+    if (!/[A-Z]/.test(pass.value)) {
+        pass.setCustomValidity('Password must contain at least one uppercase letter.');
+        pass.reportValidity();
+        return;
+    }
+    if (!/[a-z]/.test(pass.value)) {
+        pass.setCustomValidity('Password must contain at least one lowercase letter.');
+        pass.reportValidity();
+        return;
+    }
+    if (!/[0-9]/.test(pass.value)) {
+        pass.setCustomValidity('Password must contain at least one number.');
+        pass.reportValidity();
+        return;
+    }
+    if (!/[^A-Za-z0-9]/.test(pass.value)) {
+        pass.setCustomValidity('Password must contain at least one special symbol e.g. !@#$%');
+        pass.reportValidity();
+        return;
+    }
+    if (!confirm.value.trim()) {
+        confirm.setCustomValidity('Please confirm your password.');
+        confirm.reportValidity();
         return;
     }
     if (pass.value !== confirm.value) {
-        confirm.focus();
         confirm.setCustomValidity('Passwords do not match.');
         confirm.reportValidity();
-        confirm.setCustomValidity('');
         return;
     }
-    if (currentRole === 'employer' && !company.value.trim()) {
-        company.focus();
-        company.setCustomValidity('Please enter your company name.');
+    if (currentRole === 'employer' && company && !company.value.trim()) {
+        company.setCustomValidity('Please fill out this field.');
         company.reportValidity();
-        company.setCustomValidity('');
         return;
     }
 
@@ -237,23 +278,32 @@ function goStep1() {
     document.getElementById('dot1').classList.replace('done', 'active');
 }
 
-document.getElementById('regForm').addEventListener('submit', function(e) {
-    const visibleStep2 = currentRole === 'seeker'
-        ? document.getElementById('seekerStep2')
-        : document.getElementById('employerStep2');
-
-    const requiredFields = visibleStep2.querySelectorAll('[data-required="true"]');
-
-    for (let field of requiredFields) {
-        if (!field.value.trim()) {
-            e.preventDefault();
-            field.focus();
-            field.setCustomValidity('This field is required.');
-            field.reportValidity();
-            field.setCustomValidity('');
+function submitForm() {
+    if (currentRole === 'seeker') {
+        var jobTitle = document.querySelector('input[name="job_title"]');
+        var location = document.querySelector('input[name="location"]');
+        if (!jobTitle.value.trim()) {
+            showPopup(jobTitle, 'Please fill out this field.');
+            return;
+        }
+        if (!location.value.trim()) {
+            showPopup(location, 'Please fill out this field.');
+            return;
+        }
+    } else {
+        var industry = document.querySelector('select[name="industry"]');
+        var empLocation = document.querySelector('input[name="emp_location"]');
+        if (!industry.value) {
+            showPopup(industry, 'Please select an industry.');
+            return;
+        }
+        if (!empLocation.value.trim()) {
+            showPopup(empLocation, 'Please fill out this field.');
             return;
         }
     }
-});
+    document.getElementById('regForm').submit();
+}
+
 </script>
 @endpush
