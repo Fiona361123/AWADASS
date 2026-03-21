@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Http\Request;
+use App\Http\Controllers\ChatController;
 
 /* Public routes */
 Route::get('/', fn() => redirect()->route('login'));
@@ -58,4 +59,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile',       [ProfileController::class, 'show'])->name('profile');
     Route::get('/profile/edit',  [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile',       [ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/chat',                         [ChatController::class, 'index'])->name('chat.index');
+    Route::post('/chat/start',                  [ChatController::class, 'startOrGet'])->name('chat.start');
+    Route::get('/chat/{conversation}',          [ChatController::class, 'show'])->name('chat.show');
+    Route::post('/chat/{conversation}/message', [ChatController::class, 'sendMessage'])->name('chat.send');
 });
+
+// TEMPORARY - just for testing, remove later
+Route::get('/test-chat', function () {
+    return view('test-chat');
+})->middleware('auth');
