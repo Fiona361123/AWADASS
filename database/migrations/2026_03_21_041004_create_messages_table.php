@@ -20,6 +20,7 @@ class CreateMessagesTable extends Migration
             $table->text('body');
             $table->timestamp('read_at')->nullable();
             $table->timestamps();
+            $table->index('conversation_id'); //to speed up query finding messages for a conversation
         });
     }
 
