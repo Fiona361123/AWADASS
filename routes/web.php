@@ -6,6 +6,8 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Http\Request;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\JobPostingController;
 
 /* Public routes */
 Route::get('/', fn() => redirect()->route('login'));
@@ -55,7 +57,16 @@ Route::post('/reset-password', function (Request $request) {
 
 /* Authenticated routes */
 Route::middleware('auth')->group(function () {
-    Route::get('/home', fn() => view('home'))->name('home');
+    Route::get('/home', function () {
+        if (auth()->user()->isEmployer()) {
+            return redirect()->route('dashboard');
+        }
+        return view('home');
+    })->name('home');
+    
+    // The employer dashboard, now at the root level
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
     Route::get('/profile',       [ProfileController::class, 'show'])->name('profile');
     Route::get('/profile/edit',  [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile',       [ProfileController::class, 'update'])->name('profile.update');
@@ -63,6 +74,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/chat/start',                  [ChatController::class, 'startOrGet'])->name('chat.start');
     Route::get('/chat/{conversation}',          [ChatController::class, 'show'])->name('chat.show');
     Route::post('/chat/{conversation}/message', [ChatController::class, 'sendMessage'])->name('chat.send');
+
+    // Job Posting CRUD routes (no longer prefixed)
+    Route::resource('jobs', JobPostingController::class)->except(['index']);
 });
 
 // TEMPORARY - just for testing, remove later
