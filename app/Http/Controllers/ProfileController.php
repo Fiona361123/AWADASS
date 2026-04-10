@@ -42,14 +42,12 @@ class ProfileController extends Controller
 
         $request->validate([
             'name'     => ['required', 'string', 'max:255'],
-            'email'    => ['required', 'email', 'unique:users,email,' . $user->id],
             'phone'    => ['nullable', 'string', 'max:20'],
             'location' => ['nullable', 'string', 'max:100'],
             'password' => ['nullable', 'confirmed', Password::min(8)],
         ]);
 
         $user->name  = $request->name;
-        $user->email = $request->email;
         if ($request->filled('password')) {
             $user->password = Hash::make($request->password);
         }

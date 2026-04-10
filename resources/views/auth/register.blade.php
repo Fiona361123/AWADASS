@@ -68,13 +68,13 @@
                     </div>
                     <div class="field">
                         <label>Phone Number</label>
-                        <input type="text" name="phone" value="{{ old('phone') }}" placeholder="+60 12-345 6789">
+                        <input type="text" name="phone" value="{{ old('phone') }}" placeholder="Enter your phone number">
                     </div>
                     <div id="companyField" class="field" style="display:none">
                         <label>Company Name *</label>
                         <input type="text" name="company_name" value="{{ old('company_name') }}" placeholder="Acme Corp">
                     </div>
-                    <button type="button" class="btn btn-primary" onclick="goStep2()">Continue →</button>
+                    <button type="button" class="btn btn-primary" onclick="goStep2()">Continue</button>
                 </div>
 
                 {{-- Step 2 --}}
@@ -127,7 +127,7 @@
                         </div>
                         <div class="field">
                             <label>Location *</label>
-                            <input type="text" name="emp_location" value="{{ old('emp_location') }}" placeholder="Kuala Lumpur, MY">
+                            <input type="text" name="emp_location" value="{{ old('emp_location') }}" placeholder="Enter a location.">
                         </div>
                     </div>
 

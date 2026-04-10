@@ -21,7 +21,7 @@
                 <div class="profile-name">{{ $user->name }}</div>
                 <div class="profile-role {{ $user->role }}">Editing Profile</div>
             </div>
-            <a href="{{ route('profile') }}" class="btn btn-outline" style="width:auto;padding:8px 22px">← Cancel</a>
+            <a href="{{ route('profile') }}" class="btn btn-outline" style="width:auto;padding:8px 22px">Cancel</a>
         </div>
 
         @if($errors->any())
@@ -43,8 +43,8 @@
                         <input type="text" name="name" value="{{ old('name', $user->name) }}" required>
                     </div>
                     <div class="field">
-                        <label>Email Address *</label>
-                        <input type="email" name="email" value="{{ old('email', $user->email) }}" required>
+                        <label>Email Address</label>
+                        <input type="email" value="{{ $user->email }}" disabled>
                     </div>
                 </div>
                 <div class="field-row">
