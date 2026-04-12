@@ -21,7 +21,7 @@
             @auth
                 <a href="{{ route('home') }}" class="nav-logo">Job<span>Bridge</span></a>
             @else
-                <a href="{{ route('login') }}" class="nav-logo">Job<span>Bridge</span></a>
+                <a href="{{ route('landing') }}" class="nav-logo">Job<span>Bridge</span></a>
             @endauth
 
             <div class="nav-links">

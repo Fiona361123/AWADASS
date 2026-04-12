@@ -18,8 +18,8 @@ Route::get('/', function () {
     }
 
     $featuredJobs = \App\Models\JobPosting::where('status', 'open')
-        ->latest()
-        ->take(4)
+        ->inRandomOrder()
+        ->take(6)
         ->get();
 
     return view('home', compact('featuredJobs'));
@@ -76,8 +76,8 @@ Route::middleware('auth')->group(function () {
         }
 
         $featuredJobs = \App\Models\JobPosting::where('status', 'open')
-            ->latest()
-            ->take(4)
+            ->inRandomOrder()
+            ->take(6)
             ->get();
 
         return view('home', compact('featuredJobs'));
