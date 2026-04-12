@@ -18,26 +18,27 @@ class AuthController extends Controller
     }
 
     public function login(Request $request)
-    {
-        $credentials = $request->validate([
-            'email'    => ['required', 'email'],
-            'password' => ['required'],
-        ]);
+{
+    $credentials = $request->validate([
+        'email'    => ['required', 'email'],
+        'password' => ['required'],
+    ]);
 
-        $remember = $request->boolean('remember');
+    $remember = $request->boolean('remember');
 
-        if (Auth::attempt($credentials, $remember)) {
-            $request->session()->regenerate();
-            session(['user_role' => Auth::user()->role]);
+    if (Auth::attempt($credentials, $remember)) {
+        $request->session()->regenerate();
 
-            return redirect()->route('home')
-                ->with('success', 'Welcome back, ' . Auth::user()->name . '!');
-        }
+        session(['user_role' => Auth::user()->role]);
 
-        return back()
-            ->withInput($request->only('email', 'role'))
-            ->withErrors(['email' => 'These credentials do not match our records.']);
+        return redirect()->route('home')
+            ->with('success', 'Welcome back, ' . Auth::user()->name . '!');
     }
+
+    return back()
+        ->withInput($request->only('email', 'role'))
+        ->withErrors(['email' => 'These credentials do not match our records.']);
+}
 
     public function showRegister()
     {
