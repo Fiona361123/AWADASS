@@ -10,7 +10,14 @@ class JobPosting extends Model
     use HasFactory;
 
     protected $fillable = [
-        'employer_id', 'title', 'description', 'requirements', 'salary_min', 'salary_max', 'location', 'status'
+        'employer_id', 
+        'title', 
+        'description', 
+        'requirements', 
+        'salary_min',   
+        'salary_max', 
+        'location', 
+        'is_active'
     ];
 
     public function employer()

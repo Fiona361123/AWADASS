@@ -11,21 +11,21 @@ class JobPostingController extends Controller
     public function create()
     {
         $this->authorizeEmployer();
-        return view('employer.jobs.create');
+        return view('employer.create');
     }
 
     public function store(Request $request)
     {
         $this->authorizeEmployer();
-        
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'requirements' => 'nullable|string',
-            'salary_min' => 'nullable|string|max:100',
-            'salary_max' => 'nullable|string|max:100',
+            'salary_min' => 'nullable|numeric|min:0',
+            'salary_max' => 'nullable|numeric|min:0',
             'location' => 'nullable|string|max:255',
-            'status' => 'required|in:open,closed'
+            'status' => 'required|in:open,closed',
         ]);
 
         auth()->user()->jobPostings()->create($validated);
@@ -36,13 +36,13 @@ class JobPostingController extends Controller
     public function show(JobPosting $job)
     {
         $this->authorizeOwnership($job);
-        return view('employer.jobs.show', compact('job'));
+        return view('employer.showJobDetails', compact('job'));
     }
 
     public function edit(JobPosting $job)
     {
         $this->authorizeOwnership($job);
-        return view('employer.jobs.edit', compact('job'));
+        return view('employer.edit', compact('job'));
     }
 
     public function update(Request $request, JobPosting $job)
@@ -53,8 +53,8 @@ class JobPostingController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'requirements' => 'nullable|string',
-            'salary_min' => 'nullable|string|max:100',
-            'salary_max' => 'nullable|string|max:100',
+            'salary_min' => 'nullable|numeric|min:0',
+            'salary_max' => 'nullable|numeric|min:0',
             'location' => 'nullable|string|max:255',
             'status' => 'required|in:open,closed'
         ]);
@@ -74,12 +74,23 @@ class JobPostingController extends Controller
 
     private function authorizeEmployer()
     {
-        if (!auth()->user()->isEmployer()) abort(403, 'Only employers can perform this action.');
+        if (!auth()->user()->isEmployer())
+            abort(403, 'Only employers can perform this action.');
     }
 
     private function authorizeOwnership(JobPosting $job)
     {
         $this->authorizeEmployer();
-        if ($job->employer_id !== auth()->id()) abort(403, 'You do not own this job posting.');
+        if ($job->employer_id !== auth()->id())
+            abort(403, 'You do not own this job posting.');
+    }
+
+    public function toggleStatus(JobPosting $job)
+    {
+        $this->authorizeOwnership($job);
+        $job->update([
+            'status' => $job->status === 'open' ? 'closed' : 'open'
+        ]);
+        return back()->with('success', 'Job status updated.');
     }
 }

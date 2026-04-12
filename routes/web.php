@@ -83,3 +83,5 @@ Route::middleware('auth')->group(function () {
 Route::get('/test-chat', function () {
     return view('test-chat');
 })->middleware('auth');
+
+Route::patch('/jobs/{job}/toggle-status', [JobPostingController::class, 'toggleStatus'])->name('jobs.toggleStatus');
