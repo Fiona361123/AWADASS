@@ -34,18 +34,8 @@
                 <p>Sign in to your account to continue</p>
             </div>
 
-            <div class="role-strip">
-                <button type="button"
-                    class="role-btn {{ old('role', 'seeker') === 'seeker' ? 'active' : '' }}"
-                    onclick="setRole('seeker', this)">Job Seeker</button>
-                <button type="button"
-                    class="role-btn {{ old('role') === 'employer' ? 'active' : '' }}"
-                    onclick="setRole('employer', this)">Employer</button>
-            </div>
-
             <form action="{{ route('login.post') }}" method="POST" class="form-body">
                 @csrf
-                <input type="hidden" name="role" id="roleInput" value="{{ old('role', 'seeker') }}">
 
                 @if($errors->any())
                     <div class="alert alert-error">
@@ -72,9 +62,7 @@
                     <a href="{{ route('password.request') }}" class="link-text">Forgot password?</a>
                 </div>
 
-                <button type="submit" class="btn btn-primary">
-                    Sign In as <span id="roleLabel">{{ old('role', 'seeker') === 'seeker' ? 'Job Seeker' : 'Employer' }}</span>
-                </button>
+                <button type="submit" class="btn btn-primary">Sign In</button>
             </form>
 
             <div class="divider">or</div>
@@ -88,14 +76,3 @@
     </div>
 </div>
 @endsection
-
-@push('scripts')
-<script>
-function setRole(role, btn) {
-    document.getElementById('roleInput').value = role;
-    document.getElementById('roleLabel').textContent = role === 'seeker' ? 'Job Seeker' : 'Employer';
-    document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-}
-</script>
-@endpush
