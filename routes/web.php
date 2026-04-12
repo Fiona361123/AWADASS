@@ -10,14 +10,27 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\JobPostingController;
 
 /* Public routes */
-Route::get('/', fn() => redirect()->route('login'));
+Route::get('/', function () {
+    if (auth()->check()) {
+        return auth()->user()->isEmployer()
+            ? redirect()->route('dashboard')
+            : redirect()->route('home');
+    }
+
+    $featuredJobs = \App\Models\JobPosting::where('status', 'open')
+        ->latest()
+        ->take(4)
+        ->get();
+
+    return view('home', compact('featuredJobs'));
+})->name('landing');
 
 /* Login */
-Route::get('/login',  [AuthController::class, 'showLogin'])->name('login');
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 
 /* Register */
-Route::get('/register',  [AuthController::class, 'showRegister'])->name('register');
+Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
 Route::post('/register', [AuthController::class, 'register'])->name('register.post');
 
 /* Logout */
@@ -40,8 +53,8 @@ Route::get('/reset-password/{token}', function (string $token) {
 
 Route::post('/reset-password', function (Request $request) {
     $request->validate([
-        'token'    => 'required',
-        'email'    => 'required|email',
+        'token' => 'required',
+        'email' => 'required|email',
         'password' => 'required|confirmed|min:8',
     ]);
     $status = Password::reset(
@@ -61,22 +74,29 @@ Route::middleware('auth')->group(function () {
         if (auth()->user()->isEmployer()) {
             return redirect()->route('dashboard');
         }
-        return view('home');
+
+        $featuredJobs = \App\Models\JobPosting::where('status', 'open')
+            ->latest()
+            ->take(4)
+            ->get();
+
+        return view('home', compact('featuredJobs'));
     })->name('home');
-    
+
     // The employer dashboard, now at the root level
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::get('/profile',       [ProfileController::class, 'show'])->name('profile');
-    Route::get('/profile/edit',  [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::put('/profile',       [ProfileController::class, 'update'])->name('profile.update');
-    Route::get('/chat',                         [ChatController::class, 'index'])->name('chat.index');
-    Route::post('/chat/start',                  [ChatController::class, 'startOrGet'])->name('chat.start');
-    Route::get('/chat/{conversation}',          [ChatController::class, 'show'])->name('chat.show');
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+    Route::post('/chat/start', [ChatController::class, 'startOrGet'])->name('chat.start');
+    Route::get('/chat/{conversation}', [ChatController::class, 'show'])->name('chat.show');
     Route::post('/chat/{conversation}/message', [ChatController::class, 'sendMessage'])->name('chat.send');
 
     // Job Posting CRUD routes (no longer prefixed)
     Route::resource('jobs', JobPostingController::class)->except(['index']);
+    Route::patch('/jobs/{job}/toggle-status', [JobPostingController::class, 'toggleStatus'])->name('jobs.toggleStatus');
 });
 
 // TEMPORARY - just for testing, remove later
@@ -84,4 +104,3 @@ Route::get('/test-chat', function () {
     return view('test-chat');
 })->middleware('auth');
 
-Route::patch('/jobs/{job}/toggle-status', [JobPostingController::class, 'toggleStatus'])->name('jobs.toggleStatus');

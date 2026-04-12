@@ -12,13 +12,6 @@
             </a>
         </div>
 
-        {{-- Success Alert --}}
-        @if (session('success'))
-            <div style="background: #EAF3DE; border: 1px solid #C0DD97; border-radius: 8px; padding: 10px 16px; font-size: 13px; color: #3B6D11; margin-bottom: 16px;">
-                {{ session('success') }}
-            </div>
-        @endif
-
         {{-- Table Card --}}
         <div style="background: #fff; border-radius: 12px; border: 1px solid #e5e7eb; overflow: visible;">
             <table style="width: 100%; border-collapse: collapse; font-size: 14px;">

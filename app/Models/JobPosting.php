@@ -17,7 +17,7 @@ class JobPosting extends Model
         'salary_min',   
         'salary_max', 
         'location', 
-        'is_active'
+        'status'
     ];
 
     public function employer()
