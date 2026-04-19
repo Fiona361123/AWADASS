@@ -155,4 +155,31 @@ class ApplicationController extends Controller
             'documents' => $application->documents
         ]);
     }
+
+    public function viewApplicants(JobPosting $job)
+    {
+        if ($job->employer_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $applications = $job->applications()->with('user')->latest('applied_at')->get();
+
+        return view('employer.viewApplications', compact('job', 'applications'));
+    }
+
+    // Employer updates application status
+    public function updateStatus(Request $request, Application $application)
+    {
+        if ($application->jobPosting->employer_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $request->validate([
+            'status' => 'required|in:pending,reviewed,accepted,rejected',
+        ]);
+
+        $application->update(['status' => $request->status]);
+
+        return back()->with('success', 'Application status updated.');
+    }
 }

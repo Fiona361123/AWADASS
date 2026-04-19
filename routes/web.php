@@ -121,6 +121,8 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/applications/{id}/update-files', [ApplicationController::class, 'updateFiles']);
     Route::delete('/applications/{id}/documents/{documentId}', [ApplicationController::class, 'deleteDocument']);
+    Route::get('/jobs/{job}/applications', [ApplicationController::class, 'viewApplicants'])->name('jobs.applications');
+    Route::patch('/applications/{application}/status', [ApplicationController::class, 'updateStatus'])->name('applications.updateStatus');
 });
 // TEMPORARY - just for testing, remove later
 Route::get('/test-chat', function () {
