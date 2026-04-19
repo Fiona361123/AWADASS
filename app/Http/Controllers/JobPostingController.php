@@ -93,4 +93,9 @@ class JobPostingController extends Controller
         ]);
         return back()->with('success', 'Job status updated.');
     }
+
+    public function employer()
+    {
+        return $this->belongsTo(ProfileController::class, 'employer_id', 'user_id');
+    }
 }

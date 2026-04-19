@@ -8,8 +8,11 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\JobPostingController;
+use App\Http\Controllers\JobController;
+use App\Http\Controllers\ApplicationController;
 
 /* Public routes */
+
 Route::get('/', function () {
     if (auth()->check()) {
         return auth()->user()->isEmployer()
@@ -99,6 +102,23 @@ Route::middleware('auth')->group(function () {
     Route::patch('/jobs/{job}/toggle-status', [JobPostingController::class, 'toggleStatus'])->name('jobs.toggleStatus');
 });
 
+/* Job Browsing for Seeker */
+Route::middleware('auth')->group(function () {
+
+    Route::get('/jobs', [JobController::class, 'index'])
+        ->name('jobs.index');
+
+    Route::get('/jobs/{job}', [JobController::class, 'show'])
+        ->name('jobs.show');
+
+    /* Job Application for Seeker */
+    Route::post('/jobs/{job}/apply', [ApplicationController::class, 'store']);
+
+    Route::get('/applications', [ApplicationController::class, 'index'])->name('applications.index');
+
+    Route::post('/applications/{id}/update-files', [ApplicationController::class, 'updateFiles']);
+    Route::delete('/applications/{id}/documents/{documentId}', [ApplicationController::class, 'deleteDocument']);
+});
 // TEMPORARY - just for testing, remove later
 Route::get('/test-chat', function () {
     return view('test-chat');

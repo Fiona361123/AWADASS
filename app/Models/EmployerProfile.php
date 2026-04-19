@@ -41,4 +41,9 @@ class EmployerProfile extends Model
         $filled = collect($fields)->filter(fn($f) => !empty($this->$f))->count();
         return (int) round(($filled / count($fields)) * 100);
     }
+
+    public function jobs()
+    {
+        return $this->hasMany(JobPosting::class, 'employer_id', 'user_id');
+    }
 }
