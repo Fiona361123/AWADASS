@@ -7,79 +7,98 @@ use App\Models\Conversation;
 use App\Models\User;    
 use Illuminate\Http\Request;
 
-
 class ChatController extends Controller
 {
-    // Start or resume a conversation
     public function startOrGet(Request $request)
     {
-        // only seekers can start a conversation
         if (!auth()->user()->isSeeker()) {
             abort(403, 'Only job seekers can start conversations.');
         }
 
         $request->validate(['employer_id' => 'required|exists:users,id']);
-
-        // make sure the target user is actually an employer
         $employer = User::findOrFail($request->employer_id);
-        if (!$employer->isEmployer()) {
-            abort(403, 'You can only chat with employers.');
+
+        $conversation = Conversation::where('seeker_id', auth()->id())
+            ->where('employer_id', $employer->id)
+            ->first();
+
+        // If chat exists, go to it. Otherwise, go to index with a "new chat" flag.
+        if ($conversation) {
+            return redirect()->route('chat.show', $conversation);
         }
 
-        $conversation = Conversation::firstOrCreate([
-            'seeker_id'   => auth()->id(),
-            'employer_id' => $request->employer_id,
-        ]);
-
-        return redirect()->route('chat.show', $conversation);
+        return redirect()->route('chat.index', ['new_chat_with' => $employer->id]);
     }
 
-    // Show conversation view
+    public function index(Request $request)
+    {
+        $userId = auth()->id();
+        
+        // Hide chats that have no messages
+        $conversations = Conversation::where(function($q) use ($userId) {
+                $q->where('seeker_id', $userId)->orWhere('employer_id', $userId);
+            })
+            ->has('messages') 
+            ->with(['seeker', 'employer', 'messages'])
+            ->orderByDesc('last_message_at')
+            ->get();
+
+        $conversation = null;
+        $messages = collect();
+
+        if ($request->has('new_chat_with')) {
+            $employer = User::find($request->new_chat_with);
+            if ($employer) {
+                $conversation = new Conversation([
+                    'employer_id' => $employer->id,
+                    'seeker_id' => auth()->id()
+                ]);
+                $conversation->setRelation('employer', $employer);
+            }
+        }
+
+        return view('conversationView.chatbox', compact('conversations', 'messages', 'conversation'));
+    }
+
     public function show(Conversation $conversation)
     {
         $this->authorize('view', $conversation);
-
         $userId = auth()->id();
 
-        // load sidebar conversations
         $conversations = Conversation::where('seeker_id', $userId)
             ->orWhere('employer_id', $userId)
-            ->with(['seeker', 'employer', 'messages' => fn($q) => $q->latest()->limit(1)])
+            ->has('messages')
+            ->with(['seeker', 'employer', 'messages'])
             ->orderByDesc('last_message_at')
             ->get();
 
         $messages = $conversation->messages()->with('sender')->get();
 
+        // Mark as read
         $conversation->messages()
-            ->where('sender_id', '!=', auth()->id())
+            ->where('sender_id', '!=', $userId)
             ->whereNull('read_at')
             ->update(['read_at' => now()]);
 
         return view('conversationView.chatbox', compact('conversation', 'messages', 'conversations'));
     }
-    // List all conversations for current user
-    public function index()
+
+    public function sendMessage(Request $request, $id = null)
     {
-        $userId = auth()->id();
-
-        $conversations = Conversation::where('seeker_id', $userId)
-            ->orWhere('employer_id', $userId)
-            ->with(['seeker', 'employer', 'messages' => fn($q) => $q->latest()->limit(1)])
-            ->orderByDesc('last_message_at')
-            ->get();
-
-        return view('conversationView.chatbox', [
-            'conversations' => $conversations,
-            'messages'      => collect(),  // ← empty collection
-            'conversation'  => null,       // ← null when no conversation selected
+        $request->validate([
+            'body' => 'required|string',
+            'employer_id' => 'required_without:id' 
         ]);
-    }
 
-    // Send a message
-    public function sendMessage(Request $request, Conversation $conversation)
-    {
-        $this->authorize('view', $conversation);
-        $request->validate(['body' => 'required|string|max:2000']);
+        // Logic for creating the conversation on the first message
+        if ($id && $id !== '0' && $id !== 'undefined' && $id !== 'null') {
+            $conversation = Conversation::findOrFail($id);
+        } else {
+            $conversation = Conversation::firstOrCreate([
+                'seeker_id'   => auth()->id(),
+                'employer_id' => $request->employer_id,
+            ]);
+        }
 
         $message = $conversation->messages()->create([
             'sender_id' => auth()->id(),
@@ -91,11 +110,10 @@ class ChatController extends Controller
         broadcast(new MessageSent($message->load('sender')))->toOthers();
 
         return response()->json([
-            'id'          => $message->id,
-            'body'        => $message->body,
-            'sender_id'   => $message->sender_id,
-            'sender_name' => $message->sender->name,
-            'created_at'  => $message->created_at->toISOString(),
+            'id'              => $message->id,
+            'conversation_id' => $conversation->id,
+            'body'            => $message->body,
+            'time'            => $message->created_at->format('h:i A'),
         ]);
     }
 }

@@ -10,15 +10,6 @@ class JobPostingSeeder extends Seeder
 {
     public function run(): void
     {
-        // Get an employer user to assign jobs to
-        // Make sure you have at least one employer account created first
-        $employer = User::where('role', 'employer')->first();
-
-        if (!$employer) {
-            $this->command->info('No employer found. Please create an employer account first.');
-            return;
-        }
-
         $jobs = [
             [
                 'title'        => 'Senior Frontend Developer',
@@ -77,11 +68,15 @@ class JobPostingSeeder extends Seeder
         ];
 
         foreach ($jobs as $job) {
+        // Pick a random employer for each job
+        $randomEmployer = User::where('role', 'employer')->inRandomOrder()->first();
+
+        if ($randomEmployer) {
             JobPosting::create(array_merge($job, [
-                'employer_id' => $employer->id,
+                'employer_id' => $randomEmployer->id,
             ]));
         }
-
+    }
         $this->command->info('6 job postings seeded successfully!');
     }
 }
