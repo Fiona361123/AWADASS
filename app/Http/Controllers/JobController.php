@@ -9,19 +9,32 @@ use App\Models\Application;
 
 class JobController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $user = auth()->user();
-        $jobs = collect();
+        $search = trim((string) $request->query('search', ''));
+
+        $jobsQuery = JobPosting::query();
 
 
-        if ($user->isSeeker()) {
-            // seeker sees ALL jobs
-            $jobs = JobPosting::where('status', 'open')->get();
-        } elseif ($user->isEmployer()) {
-            // employer sees ONLY their own jobs
-            $jobs = JobPosting::where('employer_id', $user->id)->get();
+        if ($user->role === 'seeker') {
+            $jobsQuery->where('status', 'open');
+        } elseif ($user->role === 'employer') {
+            $jobsQuery->where('employer_id', $user->id);
+        } else {
+            $jobsQuery->whereRaw('1 = 0');
         }
+
+        if ($search !== '') {
+            $jobsQuery->where(function ($query) use ($search) {
+                $query->where('title', 'like', '%' . $search . '%')
+                    ->orWhere('location', 'like', '%' . $search . '%')
+                    ->orWhere('description', 'like', '%' . $search . '%')
+                    ->orWhere('requirements', 'like', '%' . $search . '%');
+            });
+        }
+
+        $jobs = $jobsQuery->latest()->get();
 
         return view('jobs.index', compact('jobs'));
     }
