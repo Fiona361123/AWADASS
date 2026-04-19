@@ -98,8 +98,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/chat/{conversation}/message', [ChatController::class, 'sendMessage'])->name('chat.send');
 
     // Job Posting CRUD routes (no longer prefixed)
-    Route::resource('jobs', JobPostingController::class)->except(['index']);
-    Route::patch('/jobs/{job}/toggle-status', [JobPostingController::class, 'toggleStatus'])->name('jobs.toggleStatus');
+    Route::resource('jobposting', JobPostingController::class)
+        ->except(['index'])
+        ->names('jobposting')
+        ->parameters(['jobposting' => 'job']);
+    Route::patch('/jobposting/{job}/toggle-status', [JobPostingController::class, 'toggleStatus'])->name('jobposting.toggleStatus');
 });
 
 /* Job Browsing for Seeker */

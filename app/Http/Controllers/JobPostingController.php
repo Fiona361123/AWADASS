@@ -61,7 +61,7 @@ class JobPostingController extends Controller
 
         $job->update($validated);
 
-        return redirect()->route('jobs.show', $job)->with('success', 'Job updated successfully.');
+        return redirect()->route('jobposting.show', $job)->with('success', 'Job updated successfully.');
     }
 
     public function destroy(JobPosting $job)

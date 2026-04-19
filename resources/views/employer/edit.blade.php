@@ -9,7 +9,7 @@
       <p style="font-size: 13px; color: #6b7280; margin-top: 4px;">Update the details for <strong>{{ $job->title }}</strong>.</p>
     </div>
 
-    <form action="{{ route('jobs.update', $job) }}" method="POST">
+    <form action="{{ route('jobposting.update', $job) }}" method="POST">
       @csrf
       @method('PUT')
 

@@ -9,7 +9,7 @@
       <p style="font-size: 13px; color: #6b7280; margin-top: 4px;">Fill in the details below to publish a new job listing.</p>
     </div>
 
-    <form action="{{ route('jobs.store') }}" method="POST">
+    <form action="{{ route('jobposting.store') }}" method="POST">
       @csrf
 
       {{-- Job Title + Location --}}

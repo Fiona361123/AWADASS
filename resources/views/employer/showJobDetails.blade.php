@@ -109,7 +109,7 @@
                         style="padding: 9px 18px; border-radius: 8px; font-size: 14px; font-weight: 500; background: #E6F1FB; color: #185FA5; border: 1px solid #B5D4F4; text-decoration: none;">
                         ← Back to Dashboard
                     </a>
-                    <a href="{{ route('jobs.edit', $job) }}"
+                    <a href="{{ route('jobposting.edit', $job) }}"
                         style="padding: 9px 18px; border-radius: 8px; font-size: 14px; font-weight: 500; background: #FAEEDA; color: #854F0B; border: 1px solid #FAC775; text-decoration: none;">
                         Edit Job
                     </a>

@@ -6,7 +6,7 @@
         {{-- Page Header --}}
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
             <h1 style="font-size: 22px; font-weight: 600; color: #1a1a2e;">My Job Postings</h1>
-            <a href="{{ route('jobs.create') }}"
+            <a href="{{ route('jobposting.create') }}"
                 style="background: #3B4FD8; color: #fff; padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 500; text-decoration: none;">
                 + Post New Job
             </a>
@@ -57,7 +57,7 @@
                                 <div style="display:inline-flex; align-items:center; gap:8px; justify-content:flex-end;">
 
                                     {{-- Toggle Status --}}
-                                    <form action="{{ route('jobs.toggleStatus', $job) }}" method="POST">
+                                    <form action="{{ route('jobposting.toggleStatus', $job) }}" method="POST">
                                         @csrf
                                         @method('PATCH')
                                         <label style="position:relative; display:inline-block; width:40px; height:22px; flex-shrink:0; cursor:pointer;" title="{{ $job->status === 'open' ? 'Click to close' : 'Click to open' }}">
@@ -81,14 +81,14 @@
                                         <div class="jb-dropdown" style="display:none; position:absolute; right:0; top:38px; background:#fff; border:1px solid #e5e7eb; border-radius:10px; box-shadow:0 4px 16px rgba(0,0,0,0.08); min-width:150px; z-index:99; overflow:hidden;">
 
                                             {{-- View --}}
-                                            <a href="{{ route('jobs.show', $job) }}"
+                                            <a href="{{ route('jobposting.show', $job) }}"
                                                 style="display:flex; align-items:center; gap:8px; padding:10px 14px; font-size:13px; font-weight:500; text-decoration:none; color:#185FA5;">
                                                 <svg width="14" height="14" fill="none" stroke="#185FA5" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                                                 View
                                             </a>
 
                                             {{-- Edit --}}
-                                            <a href="{{ route('jobs.edit', $job) }}"
+                                            <a href="{{ route('jobposting.edit', $job) }}"
                                                 style="display:flex; align-items:center; gap:8px; padding:10px 14px; font-size:13px; font-weight:500; text-decoration:none; color:#854F0B;">
                                                 <svg width="14" height="14" fill="none" stroke="#854F0B" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                                                 Edit
@@ -97,7 +97,7 @@
                                             <div style="height:1px; background:#f3f4f6; margin:2px 0;"></div>
 
                                             {{-- Delete --}}
-                                            <form action="{{ route('jobs.destroy', $job) }}" method="POST">
+                                            <form action="{{ route('jobposting.destroy', $job) }}" method="POST">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" onclick="return confirm('Delete this job posting?')"
