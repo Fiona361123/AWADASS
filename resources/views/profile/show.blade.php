@@ -38,7 +38,7 @@
                 <div class="member-since">Member since {{ $user->created_at->format('F Y') }}</div>
             </div>
             <div class="profile-actions">
-                <a href="{{ route('profile.edit') }}" class="btn btn-outline" style="width:auto;padding:8px 22px">✏ Edit Profile</a>
+                <a href="{{ route('profile.edit') }}" class="btn btn-outline" style="width:auto;padding:8px 22px">Edit Profile</a>
             </div>
         </div>
 

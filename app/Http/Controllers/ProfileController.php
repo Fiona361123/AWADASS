@@ -90,7 +90,8 @@ class ProfileController extends Controller
                 $data['resume_path'] = $path;
             }
 
-            $user->seekerProfile->update($data);
+            $user->seekerProfile()->update($data);
+
 
         } else {
             $request->validate([
@@ -127,7 +128,8 @@ class ProfileController extends Controller
                 $data['logo_path'] = $path;
             }
 
-            $user->employerProfile->update($data);
+            $user->employerProfile()->update($data);
+
         }
 
         return redirect()->route('profile')

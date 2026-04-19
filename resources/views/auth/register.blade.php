@@ -132,7 +132,7 @@
                     </div>
 
                     <div class="field-row">
-                        <button type="button" class="btn btn-outline" onclick="goStep1()">← Back</button>
+                        <button type="button" class="btn btn-outline" onclick="goStep1()">Back</button>
                         <button type="button" class="btn btn-primary" onclick="submitForm()">Create Account</button>
                     </div>
                 </div>
