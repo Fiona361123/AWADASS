@@ -86,7 +86,7 @@ Route::middleware('auth')->group(function () {
         return view('home', compact('featuredJobs'));
     })->name('home');
 
-    // The employer dashboard, now at the root level
+    // Employer dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
@@ -97,7 +97,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/chat/{conversation}', [ChatController::class, 'show'])->name('chat.show');
     Route::post('/chat/{conversation}/message', [ChatController::class, 'sendMessage'])->name('chat.send');
 
-    // Job Posting CRUD routes (no longer prefixed)
+    // Job Posting CRUD routes
     Route::resource('jobposting', JobPostingController::class)
         ->except(['index'])
         ->names('jobposting')
@@ -124,8 +124,4 @@ Route::middleware('auth')->group(function () {
     Route::get('/jobs/{job}/applications', [ApplicationController::class, 'viewApplicants'])->name('jobs.applications');
     Route::patch('/applications/{application}/status', [ApplicationController::class, 'updateStatus'])->name('applications.updateStatus');
 });
-// TEMPORARY - just for testing, remove later
-Route::get('/test-chat', function () {
-    return view('test-chat');
-})->middleware('auth');
 

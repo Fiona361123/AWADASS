@@ -10,7 +10,7 @@ body {
     height: 100vh;
     display: flex;
     flex-direction: column;
-    overflow: hidden; /* Prevents whole-page scrolling */
+    overflow: hidden;
 }
 
 .chat-page-wrapper {
@@ -188,7 +188,6 @@ body {
     padding: 0 4px;
 }
 
-/* --- 6. Input Area --- */
 .input-area {
     padding: 20px;
     background: #fff;

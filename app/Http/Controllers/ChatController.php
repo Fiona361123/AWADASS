@@ -22,7 +22,6 @@ class ChatController extends Controller
             ->where('employer_id', $employer->id)
             ->first();
 
-        // If chat exists, go to it. Otherwise, go to index with a "new chat" flag.
         if ($conversation) {
             return redirect()->route('chat.show', $conversation);
         }
@@ -30,11 +29,11 @@ class ChatController extends Controller
         return redirect()->route('chat.index', ['new_chat_with' => $employer->id]);
     }
 
+    // List conversations and start a new one
     public function index(Request $request)
     {
         $userId = auth()->id();
         
-        // Hide chats that have no messages
         $conversations = Conversation::where(function($q) use ($userId) {
                 $q->where('seeker_id', $userId)->orWhere('employer_id', $userId);
             })
@@ -60,6 +59,7 @@ class ChatController extends Controller
         return view('conversationView.chatbox', compact('conversations', 'messages', 'conversation'));
     }
 
+    // Show conversation and mark messages as read
     public function show(Conversation $conversation)
     {
         $this->authorize('view', $conversation);
@@ -74,7 +74,6 @@ class ChatController extends Controller
 
         $messages = $conversation->messages()->with('sender')->get();
 
-        // Mark as read
         $conversation->messages()
             ->where('sender_id', '!=', $userId)
             ->whereNull('read_at')
@@ -83,6 +82,7 @@ class ChatController extends Controller
         return view('conversationView.chatbox', compact('conversation', 'messages', 'conversations'));
     }
 
+    //create new message
     public function sendMessage(Request $request, $id = null)
     {
         $request->validate([
@@ -90,7 +90,6 @@ class ChatController extends Controller
             'employer_id' => 'required_without:id' 
         ]);
 
-        // Logic for creating the conversation on the first message
         if ($id && $id !== '0' && $id !== 'undefined' && $id !== 'null') {
             $conversation = Conversation::findOrFail($id);
         } else {
