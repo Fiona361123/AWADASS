@@ -16,6 +16,7 @@ class MessageSent implements ShouldBroadcastNow
 
     public function __construct(public Message $message) {}
 
+    //only allow authenticated users who are part of the conversation to listen to the event
     public function broadcastOn(): array
     {
         return [
@@ -23,6 +24,7 @@ class MessageSent implements ShouldBroadcastNow
         ];
     }
 
+    //what frontend can see
     public function broadcastWith(): array
     {
         return [
