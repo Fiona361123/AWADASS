@@ -95,7 +95,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
     Route::post('/chat/start', [ChatController::class, 'startOrGet'])->name('chat.start');
     Route::get('/chat/{conversation}', [ChatController::class, 'show'])->name('chat.show');
-    Route::post('/chat/{conversation}/message', [ChatController::class, 'sendMessage'])->name('chat.send');
+    Route::post('/chat/{conversation}/message', [ChatController::class, 'store'])->name('chat.send');
 
     // Job Posting CRUD routes
     Route::resource('jobposting', JobPostingController::class)

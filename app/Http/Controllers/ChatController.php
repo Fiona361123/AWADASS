@@ -83,7 +83,7 @@ class ChatController extends Controller
     }
 
     //create new message
-    public function sendMessage(Request $request, $id = null)
+    public function store(Request $request, $id = null)
     {
         $request->validate([
             'body' => 'required|string',
