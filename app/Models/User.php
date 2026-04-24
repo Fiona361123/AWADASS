@@ -14,7 +14,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role',         // 'seeker' | 'employer'
+        'role',        
     ];
 
     protected $hidden = [
@@ -28,17 +28,11 @@ class User extends Authenticatable
 
     // ─── RELATIONSHIPS ────────────────────────────────────────────────────────
 
-    /**
-     * A job seeker has one SeekerProfile.
-     */
     public function seekerProfile()
     {
         return $this->hasOne(SeekerProfile::class);
     }
 
-    /**
-     * An employer has one EmployerProfile.
-     */
     public function employerProfile()
     {
         return $this->hasOne(EmployerProfile::class,'user_id','id');

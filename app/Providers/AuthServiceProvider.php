@@ -11,22 +11,17 @@ use Illuminate\Support\Facades\Gate;
 
 class AuthServiceProvider extends ServiceProvider
 {
-    /**
-     * Model → Policy mapping.
-     */
     protected $policies = [
         User::class => UserPolicy::class,
         Conversation::class => ConversationPolicy::class,
     ];
 
-    /**
-     * Register Gates and Policies.
-     */
+
     public function boot(): void
     {
         $this->registerPolicies();
 
-        // ── Custom Gates ──────────────────────────────────────────────────────
+        // ── Custom Gates ───────────────────────────────────────────────────
         Gate::define('employer-only', fn (User $user) => $user->isEmployer());
         Gate::define('seeker-only',   fn (User $user) => $user->isSeeker());
     }
