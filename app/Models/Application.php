@@ -16,13 +16,11 @@ class Application extends Model
         'applied_at',
     ];
 
-    // applicant (seeker)
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    // job applied to
     public function jobPosting()
     {
         return $this->belongsTo(JobPosting::class);

@@ -31,7 +31,6 @@ class ApplicationController extends Controller
             ], 422);
         }
 
-        // prevent duplicate application
         $alreadyApplied = Application::where('user_id', auth()->id())
             ->where('job_posting_id', $job->id)
             ->exists();
@@ -42,7 +41,6 @@ class ApplicationController extends Controller
             ], 422);
         }
 
-        // 1. create application
         $application = Application::create([
             'user_id' => auth()->id(),
             'job_posting_id' => $job->id,
@@ -56,7 +54,6 @@ class ApplicationController extends Controller
             ]);
         }
 
-        // 2. upload files
         if (!empty($newDocuments)) {
 
             foreach ($newDocuments as $file) {
@@ -74,7 +71,6 @@ class ApplicationController extends Controller
         ]);
     }
 
-    // seeker view: my applications
     public function index()
     {
         $applications = Application::with(['jobPosting.employer.employerProfile', 'documents'])
@@ -167,7 +163,6 @@ class ApplicationController extends Controller
         return view('employer.viewApplications', compact('job', 'applications'));
     }
 
-    // Employer updates application status
     public function updateStatus(Request $request, Application $application)
     {
         if ($application->jobPosting->employer_id !== auth()->id()) {
